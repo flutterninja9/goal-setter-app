@@ -1,8 +1,12 @@
 const express = require('express')
+const colors = require('colors')
+const connectDb = require('./config/db')
 const dotenv = require('dotenv').config()
 const router = require('./routes/goalRoutes')
 const { errorMiddleware } = require('./middlewares/errorMiddleware')
 const port = process.env.PORT || 5000
+
+connectDb()
 const app = express()
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
