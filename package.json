@@ -2,9 +2,10 @@
   "name": "goal-setter-app",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "backend/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "runDev": "nodemon backend/server.js",
+    "run": "node backend/server.js"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +14,9 @@
     "nodemon": "^2.0.21"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "colors": "^1.4.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongoose": "^7.0.2"
   }
 }
