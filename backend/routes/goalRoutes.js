@@ -1,4 +1,5 @@
 const express = require('express')
+const { protect } = require('../middlewares/authMiddleware')
 const router = express.Router()
 const { 
   getGoals, 
@@ -10,13 +11,13 @@ const {
 
 router
 .route('/')
-.get(getGoals)
-.post(createGoal)
+.get(protect, getGoals)
+.post(protect, createGoal)
 
 router
 .route('/:id')
-.get(getGoalById)
-.put(updateGoal)
-.delete(deleteGoal)
+.get(protect, getGoalById)
+.put(protect, updateGoal)
+.delete(protect, deleteGoal)
 
 module.exports = router
