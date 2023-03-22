@@ -1,9 +1,10 @@
 const asyncHanlder = require('express-async-handler')
 const Goal = require('../models/goalsModel')
+const User = require('../models/userModel')
 
 const getGoals = asyncHanlder(
   async (req, res) => {
-    const goals = await Goal.find()
+    const goals = await Goal.find({ user : req.user.id })
 
     res
     .status(200)
@@ -13,7 +14,7 @@ const getGoals = asyncHanlder(
 
 const getGoalById = asyncHanlder(
   async (req, res) => {
-    const goal = await Goal.findById(req.params.id)
+    const goal = await Goal.findOne({ user: req.user.id, id : req.params.id})
     if(!goal) {
       res.status(404)
       throw new Error('Goal not found!')
@@ -33,6 +34,7 @@ const createGoal = asyncHanlder(
     } 
 
     const goal = await Goal.create({
+      user: req.user.id,
       text: req.body.text,
     })
   
@@ -44,25 +46,60 @@ const createGoal = asyncHanlder(
 
 const updateGoal = asyncHanlder(
   async (req, res) => {
-    const goal = await Goal
+    const goal = await Goal.findById(req.params.id)
+    if(!goal) {
+      res.status(400)
+      throw new Error("Goald not found!")
+    }
+
+    const user = await User.findById(req.user.id)
+    if(!user) {
+      res.status(401)
+      throw new Error('Not Authorized')
+    }
+    
+    if(!goal.user || goal.user.toString() !== user.id) {
+      res.status(500)
+      throw new Error('Some error occured in updating goal')
+    }
+
+    const updatedGoal = await Goal
     .findByIdAndUpdate(
-      req.params.id, 
+      req.params.id,
       req.body,
       { new: true }
     )
 
     res
     .status(200)
-    .json(goal)
+    .json(updatedGoal)
   }
 )
 
 const deleteGoal =asyncHanlder(
   async (req, res) => {
-    const goal = await Goal.findByIdAndDelete(req.params.id)
+    const goal = await Goal.findById(req.params.id)
+    if(!goal) {
+      res.status(400)
+      throw new Error("Goald not found!")
+    }
+
+    const user = await User.findById(req.user.id)
+    if(!user) {
+      res.status(401)
+      throw new Error('Not Authorized')
+    }
+    
+    if(!goal.user || goal.user.toString() !== user.id) {
+      res.status(500)
+      throw new Error('Some error occured in deleting goal')
+    }
+
+    await Goal.remove(goal)
+
     res
     .status(200)
-    .json(goal)
+    .json({message: 'Goal removed successfully!'})
   }
 )
 
